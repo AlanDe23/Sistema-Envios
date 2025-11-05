@@ -21,7 +21,7 @@ namespace Envios.Infrastructure.Repositories
             try
             {
                 return await _context.Pedido
-                    .Where(p => p.FechaCreacion.Date == fecha.Date)
+                    .Where(p => p.FechaCreacion.Date == fecha.Date && !p.IsDeleted)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -30,19 +30,21 @@ namespace Envios.Infrastructure.Repositories
             }
         }
 
-        // 🔹 Eliminar todos los pedidos de una fecha específica
+        // 🔹 Eliminar (lógicamente) todos los pedidos de una fecha específica
         public async Task<Pedido> DeletePedidosPorFecha(DateTime fecha)
         {
             try
             {
                 var pedidos = await _context.Pedido
-                    .Where(p => p.FechaCreacion.Date == fecha.Date)
+                    .Where(p => p.FechaCreacion.Date == fecha.Date && !p.IsDeleted)
                     .ToListAsync();
 
                 if (!pedidos.Any())
                     throw new Exception("No existen pedidos en esa fecha");
 
-                _context.Pedido.RemoveRange(pedidos);
+                foreach (var pedido in pedidos)
+                    pedido.IsDeleted = true;
+
                 await _context.SaveChangesAsync();
 
                 return pedidos.First(); // Devuelvo uno de referencia
@@ -53,19 +55,21 @@ namespace Envios.Infrastructure.Repositories
             }
         }
 
-        // 🔹 Eliminar pedidos de un mes específico
+        // 🔹 Eliminar (lógicamente) pedidos de un mes específico
         public async Task<Pedido> DeletePedidoPorMes(int year, int mes)
         {
             try
             {
                 var pedidos = await _context.Pedido
-                    .Where(p => p.FechaCreacion.Year == year && p.FechaCreacion.Month == mes)
+                    .Where(p => p.FechaCreacion.Year == year && p.FechaCreacion.Month == mes && !p.IsDeleted)
                     .ToListAsync();
 
                 if (!pedidos.Any())
                     throw new Exception("No existen pedidos en ese mes");
 
-                _context.Pedido.RemoveRange(pedidos);
+                foreach (var pedido in pedidos)
+                    pedido.IsDeleted = true;
+
                 await _context.SaveChangesAsync();
 
                 return pedidos.First(); // Devuelvo uno de referencia
@@ -76,15 +80,15 @@ namespace Envios.Infrastructure.Repositories
             }
         }
 
-
+        // 🔹 Obtener pedidos entregados (sin eliminados)
         public async Task<IEnumerable<Pedido>> GetPedidosEntregadosAsync()
         {
             return await _context.Pedido
-                .Where(p => p.Estado == "Entregado")
+                .Where(p => p.Estado == "Entregado" && !p.IsDeleted)
                 .ToListAsync();
         }
 
-
+        // 🔹 Eliminar (lógicamente) por ID
         public async Task<bool> DeleteByIdAsync(int id)
         {
             var pedido = await _context.Pedido.FirstOrDefaultAsync(p => p.IdPedido == id);
@@ -92,12 +96,13 @@ namespace Envios.Infrastructure.Repositories
             if (pedido == null)
                 return false;
 
-            _context.Pedido.Remove(pedido);
+            pedido.IsDeleted = true;
             await _context.SaveChangesAsync();
 
             return true;
         }
 
+        // 🔹 Agregar múltiples pedidos (sin cambios)
         public async Task AgregarAsync(IEnumerable<Pedido> pedidos)
         {
             if (pedidos == null || !pedidos.Any())
@@ -105,8 +110,8 @@ namespace Envios.Infrastructure.Repositories
 
             try
             {
-                await _context.Pedido.AddRangeAsync(pedidos); // Agrega todos los pedidos
-                await _context.SaveChangesAsync();           // Guarda los cambios en la base de datos
+                await _context.Pedido.AddRangeAsync(pedidos);
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
@@ -114,14 +119,13 @@ namespace Envios.Infrastructure.Repositories
             }
         }
 
-
-
+        // 🔹 Obtener pedidos por delivery (sin eliminados)
         public async Task<IEnumerable<Pedido>> GetPedidosPorDeliveryAsync(int idDelivery)
         {
             try
             {
                 return await _context.Pedido
-                    .Where(p => p.IdDelivery == idDelivery)
+                    .Where(p => p.IdDelivery == idDelivery && !p.IsDeleted)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -129,7 +133,5 @@ namespace Envios.Infrastructure.Repositories
                 throw new Exception("Error al obtener pedidos del delivery", ex);
             }
         }
-
-
     }
 }

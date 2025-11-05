@@ -74,6 +74,7 @@ namespace Envios.Infrastructure.Repositories
         public async Task<IEnumerable<Pedido>> GetAllAsync()
         {
             return await _context.Pedido
+                .Include(p => p.Delivery)
                 .Where(p => !p.IsDeleted)
                 .ToListAsync();
         }

@@ -27,15 +27,19 @@ namespace Envios.Infrastructure.Persistence.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // 🔹 Configuración de relación BalanceAdmin ↔ Delivery
             modelBuilder.Entity<BalanceAdmin>()
                 .HasOne(b => b.Delivery)
                 .WithOne(d => d.Balance)
-                .HasForeignKey<BalanceAdmin>(b => b.IdDelivery) // 👈 clave foránea real en la tabla
-                .OnDelete(DeleteBehavior.Cascade); // opcional, según tu lógica
+                .HasForeignKey<BalanceAdmin>(b => b.IdDelivery)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // 🔹 Filtro global para pedidos no eliminados
+            modelBuilder.Entity<Pedido>()
+                .HasQueryFilter(p => !p.IsDeleted);
 
             base.OnModelCreating(modelBuilder);
         }
-
 
 
 
