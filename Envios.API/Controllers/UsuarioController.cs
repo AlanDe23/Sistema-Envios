@@ -92,5 +92,21 @@ namespace Envios.API.Controllers
                return StatusCode(500, $"Error en el controlador al eliminar usuario: {ex.Message}");
                 }
         }
+
+
+        [HttpPatch("{id}/activar")]
+        public async Task<IActionResult> ActivarUsuario(int id)
+        {
+            await _usuarioService.ActivarUsuario(id);
+            return Ok("Usuario activado");
+        }
+
+        [HttpPatch("{id}/desactivar")]
+        public async Task<IActionResult> DesactivarUsuario(int id)
+        {
+            await _usuarioService.DesactivarUsuario(id);
+            return Ok("Usuario desactivado");
+        }
+
     }
 }

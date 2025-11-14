@@ -47,5 +47,22 @@ namespace Envios.API.Controllers
             await _deliveryService.UpdateAsync(dto);
             return NoContent();
         }
+
+
+
+        [HttpPatch("delivery/{id}/activar")]
+        public async Task<IActionResult> ActivarDelivery(int id)
+        {
+            await _deliveryService.Activar(id);
+            return Ok("Delivery activado");
+        }
+
+        [HttpPatch("delivery/{id}/desactivar")]
+        public async Task<IActionResult> DesactivarDelivery(int id)
+        {
+            await _deliveryService.Desactivar(id);
+            return Ok("Delivery desactivado");
+        }
+
     }
 }

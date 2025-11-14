@@ -13,5 +13,9 @@ namespace Envios.Application.Service.Interface
         Task<IEnumerable<GetDeliveryResumenDto>> GetAllAsync();
         Task UpdateAdminAsync(UpdateDeliveryAdminDto dto);
         Task UpdateAsync(UpdateDeliveryDto dto);
+
+        Task Activar(int id);
+        Task Desactivar(int id);
+
     }
 }

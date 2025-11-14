@@ -33,5 +33,55 @@ namespace Envios.Infrastructure.Repositories
                 .Include(d => d.Usuario)  // 👈 carga el usuario relacionado
                 .ToListAsync();
         }
+
+        public async Task Activar(int id)
+        {
+            try
+            {
+                var Delievery = await _context.Delivery
+                    .FirstOrDefaultAsync(D => D.IdDelivery == id);
+
+                if (Delievery == null)
+                    throw new Exception("Delievery no encontrado");
+
+                Delievery.Activo = true;
+
+                _context.Delivery.Update(Delievery);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al activar el Delievery: {ex.Message}");
+            }
+        }
+
+
+
+
+        public async Task Desactivar(int id)
+        {
+            try
+            {
+                var Delivery = await _context.Delivery
+                    .FirstOrDefaultAsync(D => D.IdDelivery == id);
+
+                if (Delivery == null)
+                    throw new Exception("Delivery no encontrado");
+
+                Delivery.Activo = false;
+
+                _context.Delivery.Update(Delivery);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al desactivar el Delievery: {ex.Message}");
+            }
+        }
+
+        public Task<Delivery> GetByEmailAsync(string correo)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

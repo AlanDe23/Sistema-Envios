@@ -13,7 +13,12 @@ namespace Envios.Domain.Interfaces
         public interface IDeliveryRepository : IRepositorioGenerico<Delivery>
         {
             Task<Delivery> GetByUserIdAsync(int idUsuario);
-        }
-    
+
+         
+             Task Activar(int id);
+             Task Desactivar(int id);
+
+    }
+
 
 }

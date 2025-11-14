@@ -27,6 +27,8 @@ namespace Envios.Domain.Entities
 
         public decimal BalanceAcumulado { get; set; } = 0;
 
+        public bool Activo { get; set; } = false;
+
         // Relación con Usuario
         public Usuario Usuario { get; set; }
         [JsonIgnore]

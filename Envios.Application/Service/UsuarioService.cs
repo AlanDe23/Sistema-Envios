@@ -103,5 +103,22 @@ namespace Envios.Application.Services
             return true;
         }
 
+
+        public async Task ActivarUsuario(int id)
+        {
+            var user = await _usuarioRepo.GetByIdAsync(id);
+            user.Activo = true;
+            await _usuarioRepo.ActualizarAsync(user);
+        }
+
+        public async Task DesactivarUsuario(int id)
+        {
+            var user = await _usuarioRepo.GetByIdAsync(id);
+            user.Activo = false;
+            await _usuarioRepo.ActualizarAsync(user);
+        }
+
+
+
     }
 }

@@ -77,5 +77,21 @@ namespace Envios.Application.Services
 
             await _deliveryRepository.ActualizarAsync(delivery);
         }
+
+
+
+        public async Task Activar(int id)
+        {
+            var user = await _deliveryRepository.GetByIdAsync(id);
+            user.Activo = true;
+            await _deliveryRepository.ActualizarAsync(user);
+        }
+
+        public async Task Desactivar(int id)
+        {
+            var user = await _deliveryRepository.GetByIdAsync(id);
+            user.Activo = false;
+            await _deliveryRepository.ActualizarAsync(user);
+        }
     }
 }

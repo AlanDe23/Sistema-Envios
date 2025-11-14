@@ -10,6 +10,11 @@ namespace Envios.Domain.Interfaces
     public interface IRepositorioUsuario: IRepositorioGenerico<Usuario>
     {
         Task<Usuario> GetByEmailAsync(string correo);
-        
+
+        Task Activar(int id);
+        Task Desactivar(int id);
+
+
+
     }
 }
