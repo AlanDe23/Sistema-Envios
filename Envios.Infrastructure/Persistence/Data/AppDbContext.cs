@@ -21,7 +21,10 @@ namespace Envios.Infrastructure.Persistence.Data
 
         public DbSet<BalancePagado> BalancePagado { get; set; }
 
-        public DbSet<Suscripcion> Suscripciones { get; set; }   
+        public DbSet<Suscripcion> Suscripciones { get; set; }
+
+        public DbSet<Sucursal> Sucursales { get; set; }
+
 
 
 

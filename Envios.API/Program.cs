@@ -1,4 +1,5 @@
-﻿    using Envios.Application.Service.Interface;
+﻿using Envios.Application.Service;
+using Envios.Application.Service.Interface;
     using Envios.Application.Services;
     using Envios.Domain.Interfaces;
     using Envios.Infrastructure.Persistence.Data;
@@ -43,6 +44,7 @@
                 builder.Services.AddScoped<IRepositorioPedido, RepositorioPedido>();
                 builder.Services.AddScoped<IRepositorioBalancePagado, RepositorioBalancePagado>();
                 builder.Services.AddScoped<IRepositorioSuscripcion, RepositorioSuscripcion>();
+                builder.Services.AddScoped<IRepositorioSucursal, RepositorioSucursal>();
 
                 builder.Services.AddScoped<IRepositorioBalanceAdmin, RepositorioBalance>();
                 builder.Services.AddScoped<IBalanceService, BalanceService>();
@@ -54,7 +56,7 @@
                 builder.Services.AddScoped<IPedidoService, PedidoService>();
                 builder.Services.AddScoped<IBalanceService, BalanceService>();
                 builder.Services.AddScoped<IPagoService , PagoSimuladoService>();
-
+            builder.Services.AddScoped<ISucursalService, SucursalService>();
                 builder.Services.AddScoped<SuscripcionService>();
 
             // **Registro de PedidoServiceDelivery**

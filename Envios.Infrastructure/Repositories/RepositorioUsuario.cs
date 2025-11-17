@@ -29,14 +29,14 @@ namespace Envios.Infrastructure.Repositories
 
         public async Task<Usuario?> GetByEmailAsync(string correo)
         {
-           // try
-        //    {
+            try
+            {
                 return await _context.Usuario.FirstOrDefaultAsync(u => u.Correo == correo);
-          //  }
-          //  catch (Exception ex)
-           // {
-               /// throw new Exception($"Error al obtener Usuario por correo: {correo}", ex);
-         //   }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener Usuario por correo: {correo}", ex);
+            }
         }
 
         public async Task Activar(int id)

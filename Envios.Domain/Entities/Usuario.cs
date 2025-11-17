@@ -21,6 +21,9 @@ namespace Envios.Domain.Entities
         public bool Activo { get; set; } = false;
 
         public ICollection<Delivery> Deliverys { get; set; }
-       
+
+
+        public ICollection<Sucursal> Sucursales { get; set; }
+
     }
 }
