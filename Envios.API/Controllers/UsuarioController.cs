@@ -1,4 +1,5 @@
-﻿using Envios.Application.Services;
+﻿using Envios.Application.DTOs.CambiarContrasenaDTO;
+using Envios.Application.Services;
 using Envios.Domain.DTOs.UsuarioDTO;
 using Microsoft.AspNetCore.Mvc;
 
@@ -107,6 +108,38 @@ namespace Envios.API.Controllers
             await _usuarioService.DesactivarUsuario(id);
             return Ok("Usuario desactivado");
         }
+
+
+        [HttpPost("cambiar-contrasena")]
+        public async Task<IActionResult> CambiarContrasena([FromBody] CambiarContrasenaDto dto)
+        {
+            await _usuarioService.CambiarContrasenaAsync(dto);
+            return Ok("Contraseña cambiada correctamente.");
+        }
+
+
+        [HttpPost("recuperar")]
+        public async Task<IActionResult> SolicitarRecuperacion([FromBody] RecuperarContrasenaDto dto)
+        {
+            var token = await _usuarioService.SolicitarRecuperacionAsync(dto.Correo);
+
+            return Ok(new
+            {
+                mensaje = "Si el correo existe, se enviará un enlace de recuperación.",
+                token = token // mostrarlo para pruebas (en producción se envía por email)
+            });
+        }
+
+
+        [HttpPost("restablecer")]
+        public async Task<IActionResult> Restablecer([FromBody] RestablecerContrasenaDto dto)
+        {
+            await _usuarioService.RestablecerContrasenaAsync(dto);
+            return Ok("Contraseña restablecida correctamente.");
+        }
+
+
+
 
     }
 }

@@ -1,6 +1,9 @@
-﻿using Envios.Domain.DTOs.UsuarioDTO;
+﻿using Envios.Application.DTOs.CambiarContrasenaDTO;
+using Envios.Application.Service.Envios.Application.Services;
+using Envios.Domain.DTOs.UsuarioDTO;
 using Envios.Domain.Entities;
 using Envios.Domain.Interfaces;
+using System.Collections.Concurrent;
 
 namespace Envios.Application.Services
 {
@@ -8,11 +11,16 @@ namespace Envios.Application.Services
     {
         private readonly IRepositorioUsuario _usuarioRepo;
         private readonly IDeliveryRepository _deliveryRepository;
+        private readonly EmailService _emailService;
+        private static readonly ConcurrentDictionary<string, (int userId, DateTime expiration)> _tokens
+       = new ConcurrentDictionary<string, (int, DateTime)>();
 
-        public UsuarioService(IRepositorioUsuario usuarioRepo  , IDeliveryRepository deliveryRepository)
+
+        public UsuarioService(IRepositorioUsuario usuarioRepo  , IDeliveryRepository deliveryRepository , EmailService emailService)
         {
             _usuarioRepo = usuarioRepo;
-            _deliveryRepository = deliveryRepository;   
+            _deliveryRepository = deliveryRepository;
+            _emailService = emailService;
         }
 
         public async Task<GetUsuarioDto> CreateAsync(CreateUsuarioDto dto)
@@ -118,7 +126,68 @@ namespace Envios.Application.Services
             await _usuarioRepo.ActualizarAsync(user);
         }
 
+        public async Task CambiarContrasenaAsync(CambiarContrasenaDto dto)
+        {
+            var usuario = await _usuarioRepo.GetByIdAsync(dto.IdUsuario);
 
+            if (usuario == null)
+                throw new Exception("Usuario no encontrado");
+
+            if (usuario.Contrasena != dto.ContrasenaActual)
+                throw new Exception("La contraseña actual no es correcta");
+
+            usuario.Contrasena = dto.NuevaContrasena;
+
+            await _usuarioRepo.ActualizarAsync(usuario);
+        }
+
+
+        public async Task<string> SolicitarRecuperacionAsync(string correo)
+        {
+            var usuario = await _usuarioRepo.GetByEmailAsync(correo);
+
+            if (usuario == null)
+                return "";
+
+            string token = Guid.NewGuid().ToString();
+            DateTime expiracion = DateTime.UtcNow.AddMinutes(30);
+
+            _tokens[token] = (usuario.IdUsuario, expiracion);
+
+            // 🔹 Enviar el correo real
+            string mensaje = $@"
+        Hola {usuario.Nombre},<br><br>
+        Usa este token para restablecer tu contraseña:<br>
+        <b>{token}</b><br><br>
+        Este token expira en 30 minutos.
+    ";
+
+            await _emailService.EnviarCorreoAsync(usuario.Correo, "Recuperación de Contraseña", mensaje);
+
+            return token;
+        }
+
+        public async Task RestablecerContrasenaAsync(RestablecerContrasenaDto dto)
+        {
+            if (!_tokens.TryGetValue(dto.Token, out var data))
+                throw new Exception("Token inválido");
+
+            if (DateTime.UtcNow > data.expiration)
+            {
+                _tokens.TryRemove(dto.Token, out _);
+                throw new Exception("Token expirado");
+            }
+
+            var usuario = await _usuarioRepo.GetByIdAsync(data.userId);
+
+            if (usuario == null)
+                throw new Exception("Usuario no encontrado");
+
+            usuario.Contrasena = dto.NuevaContrasena;
+            await _usuarioRepo.ActualizarAsync(usuario);
+
+            _tokens.TryRemove(dto.Token, out _);
+        }
 
     }
 }

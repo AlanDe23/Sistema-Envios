@@ -1,4 +1,5 @@
 ﻿using Envios.Application.Service;
+using Envios.Application.Service.Envios.Application.Services;
 using Envios.Application.Service.Interface;
     using Envios.Application.Services;
     using Envios.Domain.Interfaces;
@@ -56,8 +57,9 @@ using Envios.Application.Service.Interface;
                 builder.Services.AddScoped<IPedidoService, PedidoService>();
                 builder.Services.AddScoped<IBalanceService, BalanceService>();
                 builder.Services.AddScoped<IPagoService , PagoSimuladoService>();
-            builder.Services.AddScoped<ISucursalService, SucursalService>();
+                builder.Services.AddScoped<ISucursalService, SucursalService>();
                 builder.Services.AddScoped<SuscripcionService>();
+                builder.Services.AddScoped<EmailService>();
 
             // **Registro de PedidoServiceDelivery**
             builder.Services.AddScoped<PedidoServiceDelivery>();
