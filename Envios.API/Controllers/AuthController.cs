@@ -27,15 +27,17 @@ public class AuthController : ControllerBase
             if (string.IsNullOrWhiteSpace(dto.Contrasena))
                 return BadRequest(new { message = "La contraseña es obligatoria." });
 
-            var usuario = await _authService.LoginAsync(dto.Correo, dto.Contrasena );
+            // ⬇️ MODIFICADO: Ahora retorna LoginResponseDto con sucursales
+            var resultado = await _authService.LoginAsync(dto.Correo, dto.Contrasena);
 
             return Ok(new
             {
-                mensaje = $"¡Bienvenido, {usuario.Nombre}!",
-                idUsuario = usuario.IdUsuario,
-                nombre = usuario.Nombre,
-                correo = usuario.Correo,
-                rol = usuario.Rol.ToString()
+                mensaje = $"¡Bienvenido, {resultado.Nombre}!",
+                idUsuario = resultado.IdUsuario,
+                nombre = resultado.Nombre,
+                correo = resultado.Correo,
+                rol = resultado.Rol,
+                sucursales = resultado.Sucursales // ⬅️ NUEVO
             });
         }
         catch (Exception ex)
