@@ -35,6 +35,7 @@ namespace Envios.Application.Services
             };
 
             await _usuarioRepo.AgregarAsync(usuario);
+            await _emailService.EnviarBienvenidaAsync(usuario.Correo, usuario.Nombre);
 
             return new GetUsuarioDto
             {
@@ -149,23 +150,53 @@ namespace Envios.Application.Services
             if (usuario == null)
                 return "";
 
-            string token = Guid.NewGuid().ToString();
-            DateTime expiracion = DateTime.UtcNow.AddMinutes(30);
+            // 🔹 Generar token de 6 números
+            var random = new Random();
+            string token = random.Next(100000, 999999).ToString();
 
+            DateTime expiracion = DateTime.UtcNow.AddMinutes(30);
             _tokens[token] = (usuario.IdUsuario, expiracion);
 
-            // 🔹 Enviar el correo real
+            // 🔹 Email elegante en HTML
             string mensaje = $@"
-        Hola {usuario.Nombre},<br><br>
-        Usa este token para restablecer tu contraseña:<br>
-        <b>{token}</b><br><br>
-        Este token expira en 30 minutos.
-    ";
+    <div style='font-family: Arial; padding: 20px; background:#f4f4f4;'>
+        <div style='max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 10px; 
+                    box-shadow: 0 0 10px rgba(0,0,0,0.1);'>
+
+            <h2 style='color:#2C73D2; text-align:center;'>Recuperación de Contraseña</h2>
+
+            <p style='font-size: 15px; color:#333;'>
+                Hola <b>{usuario.Nombre}</b>,
+            </p>
+
+            <p style='font-size: 15px; color:#333;'>
+                Recibimos una solicitud para restablecer tu contraseña.  
+                Utiliza el siguiente código para continuar:
+            </p>
+
+            <div style='text-align:center; margin: 30px 0;'>
+                <span style='font-size: 40px; letter-spacing: 10px; color:#2C73D2; font-weight: bold;'>
+                    {token}
+                </span>
+            </div>
+
+            <p style='font-size: 14px; color:#555; text-align:center;'>
+                El código expirará en <b>30 minutos</b>.
+            </p>
+
+            <hr style='margin-top: 30px;'>
+
+            <p style='font-size: 12px; color:#888; text-align:center;'>
+                Si no solicitaste este cambio, puedes ignorar este mensaje.
+            </p>
+        </div>
+    </div>";
 
             await _emailService.EnviarCorreoAsync(usuario.Correo, "Recuperación de Contraseña", mensaje);
 
             return token;
         }
+
 
         public async Task RestablecerContrasenaAsync(RestablecerContrasenaDto dto)
         {

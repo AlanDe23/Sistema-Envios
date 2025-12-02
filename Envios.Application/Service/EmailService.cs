@@ -41,12 +41,65 @@ namespace Envios.Application.Service
 
 
                 stmpClient.Credentials = new NetworkCredential(emailEmisor, password);  
-                var cuerpo = new MailMessage(emailEmisor! ,destino , asunto, mensaje);
-                await stmpClient.SendMailAsync(cuerpo);  
+                var cuerpo = new MailMessage(emailEmisor!, destino, asunto, mensaje) 
+                {
+                    IsBodyHtml = true
 
+                };
 
+                await stmpClient.SendMailAsync(cuerpo);
 
+               
+                        
             }
+
+
+            private string GenerarCorreoBienvenida(string nombre)
+            {
+                return $@"
+    <div style='font-family: Arial; padding: 20px; background: #f4f4f4;'>
+        <div style='max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);'>
+
+            <h2 style='color:#2C73D2; text-align:center;'>¡Bienvenido a Delivery Control!</h2>
+
+            <p style='font-size: 15px; color:#333;'>
+                Hola <b>{nombre}</b>,
+            </p>
+
+            <p style='font-size: 15px; color:#333;'>
+                Tu cuenta ha sido creada exitosamente.  
+                Ahora puedes gestionar deliverys, pedidos y Entregas desde nuestra plataforma.
+            </p>
+
+            <div style='text-align: center; margin-top: 20px;'>
+                <a href='https://tusitio.com/login' 
+                   style='background:#2C73D2; padding: 12px 25px; color:white; text-decoration:none;
+                          font-weight:bold; border-radius:5px; display:inline-block;'>
+                    Iniciar Sesión
+                </a>
+            </div>
+
+            <hr style='margin-top: 30px;'>
+
+            <p style='font-size: 12px; color:#777; text-align:center;'>
+                Gracias por unirte a Delivery Control.
+            </p>
+        </div>
+    </div>";
+            }
+
+
+            public async Task EnviarBienvenidaAsync(string destino, string nombre)
+            {
+                string asunto = "Bienvenido a Delivery Control";
+                string mensaje = GenerarCorreoBienvenida(nombre);
+
+                await EnviarCorreoAsync(destino, asunto, mensaje);
+            }
+
+
+
+
         }
     }
 }
