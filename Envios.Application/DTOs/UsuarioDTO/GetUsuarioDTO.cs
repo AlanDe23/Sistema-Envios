@@ -14,5 +14,7 @@ namespace Envios.Domain.DTOs.UsuarioDTO
         public string Correo { get; set; }
         public RolUsuario Rol { get; set; }
         public DateTime FechaRegistro { get; set; }
+
+        public bool Activo { get; set; }
     }
 }

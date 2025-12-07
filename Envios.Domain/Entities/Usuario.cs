@@ -18,6 +18,10 @@ namespace Envios.Domain.Entities
         public RolUsuario Rol {  get; set; }
         public DateTime FechaRegistro { get; set; }
 
+        public string? TokenRecuperacion { get; set; }
+        public DateTime? TokenExpira { get; set; }
+
+
         public bool Activo { get; set; } = false;
 
         public ICollection<Delivery> Deliverys { get; set; }

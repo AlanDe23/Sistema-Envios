@@ -130,7 +130,7 @@ public class BalanceService : IBalanceService
             TotalEfectivoNeto = totalEfectivoNeto,
             TotalFinalAdmin = totalFinalAdmin,
             TotalPedidosEntregados = entregados.Count,
-            FechaActualizacion = DateTime.UtcNow,
+            FechaActualizacion = DateTime.Now,
             Pagado = false,
             TotalMontoPedidos = entregados.Sum(p => p.PrecioPedido),
             TotalEntregados = entregados.Count

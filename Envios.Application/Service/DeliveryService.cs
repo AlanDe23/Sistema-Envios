@@ -45,6 +45,7 @@ namespace Envios.Application.Services
                 IdDelivery = d.IdDelivery,
                 Telefono = d.Telefono,
                 Estado = d.Estado,
+                Activo = d.Activo,
                 NombreUsuario = d.Usuario != null ? d.Usuario.Nombre : string.Empty
             });
         }

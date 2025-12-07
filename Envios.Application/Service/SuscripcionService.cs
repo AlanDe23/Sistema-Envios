@@ -25,8 +25,8 @@ namespace Envios.Application.Services
             {
                 Id = dto.UsuarioId,
                 UsuarioId = dto.UsuarioId,
-                FechaInicio = DateTime.UtcNow,
-                FechaFin = DateTime.UtcNow.AddMonths(1),
+                FechaInicio = DateTime.Now,
+                FechaFin = DateTime.Now.AddMonths(1),
                 Monto = dto.Monto,
                 MetodoPago = dto.MetodoPago,
                 Estado = respuestaPago.Exitoso ? "Activa" : "Pendiente",

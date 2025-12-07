@@ -20,7 +20,7 @@ namespace Envios.Application.DTOs.PedidoDTO.Admin
         public int? IdDelivery { get; set; }
         public string MetodoPago { get; set; }
         public string NombreDelivery { get; set; }
-        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+        public DateTime FechaCreacion { get; set; } = DateTime.Now;
 
         public decimal MontoPorCabrar { get; set; }
     }

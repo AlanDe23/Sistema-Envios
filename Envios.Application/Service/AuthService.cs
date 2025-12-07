@@ -30,15 +30,18 @@ public class AuthService
         if (usuario.Contrasena != contrasena)
             throw new Exception("La contraseña es incorrecta.");
 
-        if (!usuario.Activo)
+        // SOLO aplicar esta validación si NO es delivery
+        if (usuario.Rol != RolUsuario.Delivery && !usuario.Activo)
             throw new Exception("Tu cuenta está desactivada. Contacta al administrador.");
 
-        // Validar Delivery si corresponde
+        // VALIDAR DELIVERY
         if (usuario.Rol == RolUsuario.Delivery)
         {
-            var delivery = await _deliveryRepo.GetByIdAsync(usuario.IdUsuario);
+            var delivery = await _deliveryRepo.GetByUsuarioIdAsync(usuario.IdUsuario);
+
             if (delivery == null)
                 throw new Exception("No existe un perfil de delivery asociado a este usuario.");
+
             if (!delivery.Activo)
                 throw new Exception("Tu cuenta de delivery está desactivada. Contacta al administrador.");
         }

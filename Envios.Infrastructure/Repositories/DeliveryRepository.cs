@@ -83,5 +83,14 @@ namespace Envios.Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
+
+
+
+        public async Task<Delivery?> GetByUsuarioIdAsync(int idUsuario)
+        {
+            return await _context.Delivery
+                .FirstOrDefaultAsync(d => d.IdUsuario == idUsuario);
+        }
+
     }
 }

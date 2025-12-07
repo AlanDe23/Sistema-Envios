@@ -13,8 +13,6 @@ namespace Envios.Domain.Interfaces
 
         Task Activar(int id);
         Task Desactivar(int id);
-
-
-
+        Task<Usuario?> GetByTokenAsync(string token);
     }
 }

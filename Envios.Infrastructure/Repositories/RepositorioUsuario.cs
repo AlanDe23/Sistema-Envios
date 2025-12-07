@@ -81,5 +81,15 @@ namespace Envios.Infrastructure.Repositories
                 throw new Exception($"Error al desactivar el usuario: {ex.Message}");
             }
         }
+
+
+
+
+        public async Task<Usuario?> GetByTokenAsync(string token)
+        {
+            return await _context.Usuario
+                .FirstOrDefaultAsync(x => x.TokenRecuperacion == token);
+        }
+
     }
-}
+}   

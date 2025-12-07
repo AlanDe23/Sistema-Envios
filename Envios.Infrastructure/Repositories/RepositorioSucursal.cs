@@ -1,6 +1,7 @@
 ﻿using Envios.Domain.Entities;
 using Envios.Domain.Interfaces;
 using Envios.Infrastructure.Persistence.Data;
+using Envios.Infrastructure.Repositories.ReposGenery;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Envios.Infrastructure.Repositories.ReposGenery
+namespace Envios.Infrastructure.Repositories
 {
     public class RepositorioSucursal : RepositorioGenerico<Sucursal>, IRepositorioSucursal
     {

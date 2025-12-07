@@ -11,8 +11,10 @@
             public int IdDelivery { get; set; }
             public string Telefono { get; set; }
             public bool Estado { get; set; }
-     
-            public string NombreUsuario { get; set; }
+
+           public bool Activo { get; set; }
+
+          public string NombreUsuario { get; set; }
           
         }
     }

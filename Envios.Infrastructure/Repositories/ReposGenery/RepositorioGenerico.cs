@@ -69,7 +69,15 @@ namespace Envios.Infrastructure.Repositories.ReposGenery
         {
             try
             {
-                _dbSet.Update(entidad);
+                _context.Set<T>().Attach(entidad);
+                _context.Entry(entidad).State = EntityState.Modified;
+
+                // ❗ Evitar que EF intente actualizar propiedades de navegación
+                foreach (var navigation in _context.Entry(entidad).Navigations)
+                {
+                    navigation.IsModified = false;
+                }
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -77,6 +85,8 @@ namespace Envios.Infrastructure.Repositories.ReposGenery
                 throw new Exception($"Error al actualizar {typeof(T).Name}", ex);
             }
         }
+
+
 
         public async Task EliminarAsync(T entidad)
         {

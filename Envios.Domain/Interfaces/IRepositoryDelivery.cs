@@ -17,7 +17,7 @@ namespace Envios.Domain.Interfaces
          
              Task Activar(int id);
              Task Desactivar(int id);
-
+             Task<Delivery?> GetByUsuarioIdAsync(int idUsuario);
     }
 
 

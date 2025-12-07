@@ -4,6 +4,7 @@ using Envios.Domain.DTOs.UsuarioDTO;
 using Envios.Domain.Entities;
 using Envios.Domain.Interfaces;
 using System.Collections.Concurrent;
+using System.Security.Cryptography;
 
 namespace Envios.Application.Services
 {
@@ -31,7 +32,7 @@ namespace Envios.Application.Services
                 Correo = dto.Correo,
                 Contrasena = dto.Contrasena,
                 Rol = dto.Rol,
-                FechaRegistro = DateTime.UtcNow
+                FechaRegistro = DateTime.Now
             };
 
             await _usuarioRepo.AgregarAsync(usuario);
@@ -58,8 +59,10 @@ namespace Envios.Application.Services
                 Nombre = usuario.Nombre,
                 Correo = usuario.Correo,
                 Rol = usuario.Rol,
-                FechaRegistro = usuario.FechaRegistro
-            };
+                FechaRegistro = usuario.FechaRegistro,
+                Activo = usuario.Activo 
+
+            }; 
         }
 
         public async Task<IEnumerable<GetUsuarioDto>> GetAllAsync()
@@ -71,7 +74,8 @@ namespace Envios.Application.Services
                 Nombre = u.Nombre,
                 Correo = u.Correo,
                 Rol = u.Rol,
-                FechaRegistro = u.FechaRegistro
+                FechaRegistro = u.FechaRegistro,
+                Activo =  u.Activo
             });
         }
 
@@ -154,9 +158,11 @@ namespace Envios.Application.Services
             var random = new Random();
             string token = random.Next(100000, 999999).ToString();
 
-            DateTime expiracion = DateTime.UtcNow.AddMinutes(30);
-            _tokens[token] = (usuario.IdUsuario, expiracion);
+            DateTime expiracion = DateTime.Now.AddMinutes(30);
+            usuario.TokenRecuperacion = token;
+            usuario.TokenExpira = expiracion;
 
+            await _usuarioRepo.ActualizarAsync(usuario);
             // 🔹 Email elegante en HTML
             string mensaje = $@"
     <div style='font-family: Arial; padding: 20px; background:#f4f4f4;'>
@@ -196,29 +202,41 @@ namespace Envios.Application.Services
 
             return token;
         }
-
-
         public async Task RestablecerContrasenaAsync(RestablecerContrasenaDto dto)
         {
-            if (!_tokens.TryGetValue(dto.Token, out var data))
+            var usuario = await _usuarioRepo.GetByTokenAsync(dto.Token);
+            if (usuario == null)
                 throw new Exception("Token inválido");
 
-            if (DateTime.UtcNow > data.expiration)
-            {
-                _tokens.TryRemove(dto.Token, out _);
+            if (!usuario.TokenExpira.HasValue || usuario.TokenExpira < DateTime.Now)
                 throw new Exception("Token expirado");
-            }
 
-            var usuario = await _usuarioRepo.GetByIdAsync(data.userId);
+            usuario.Contrasena = dto.NuevaContrasena;
+            usuario.TokenRecuperacion = null;
+            usuario.TokenExpira = null;
 
+            await _usuarioRepo.ActualizarAsync(usuario);
+        }
+
+
+
+        public async Task<string> GenerarTokenRecuperacionAsync(string correo)
+        {
+            var usuario = await _usuarioRepo.GetByEmailAsync(correo);
             if (usuario == null)
                 throw new Exception("Usuario no encontrado");
 
-            usuario.Contrasena = dto.NuevaContrasena;
-            await _usuarioRepo.ActualizarAsync(usuario);
+            var token = RandomNumberGenerator.GetInt32(100000, 999999).ToString();
 
-            _tokens.TryRemove(dto.Token, out _);
+            usuario.TokenRecuperacion = token;
+            usuario.TokenExpira = DateTime.Now.AddMinutes(30);
+
+            await _usuarioRepo.ActualizarAsync(usuario);
+            return token;
         }
+
+
+
 
     }
 }
