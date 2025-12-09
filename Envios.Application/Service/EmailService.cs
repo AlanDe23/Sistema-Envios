@@ -98,6 +98,59 @@ namespace Envios.Application.Service
             }
 
 
+            public async Task EnviarBienvenidaDeliveryAsync(string correo, string nombre, int idUsuario)
+            {
+                string asunto = "¡Bienvenido al Equipo de Delivery!";
+
+                string mensaje = $@"
+<div style='font-family: Arial; padding: 20px; background: #f4f4f4;'>
+    <div style='max-width: 520px; margin: auto; background: white; padding: 25px; 
+                border-radius: 12px; box-shadow: 0 0 12px rgba(0,0,0,0.12);'>
+
+        <!-- Encabezado -->
+        <h2 style='color:#2C73D2; text-align:center; margin-bottom: 10px;'>
+            ¡Bienvenido al Equipo de Delivery!
+        </h2>
+
+        <p style='font-size: 15px; color:#333;'>
+            Hola <b>{nombre}</b>,
+        </p>
+
+        <p style='font-size: 15px; color:#333;'>
+            Tu cuenta como <b>Delivery</b> ha sido creada exitosamente.
+        </p>
+
+        <!-- Tarjeta con el ID -->
+        <div style='background:#2C73D2; color:white; padding:15px; border-radius: 8px; 
+                    text-align:center; margin: 18px 0; font-size:16px; font-weight:bold;'>
+            Tu ID de Usuario: <span style='font-size: 20px;'>{idUsuario}</span>
+        </div>
+
+        <p style='font-size: 15px; color:#333;'>
+            Este ID será utilizado por tu administrador para agregarte a su equipo de delivery.
+            Asegúrate de guardarlo y compartirlo con tu supervisor.
+        </p>
+
+        <div style='text-align: center; margin-top: 22px;'>
+            <a href='https://tusitio.com/login'
+               style='background:#2C73D2; padding: 12px 25px; color:white; text-decoration:none;
+                      font-weight:bold; border-radius:6px; display:inline-block;'>
+                Acceder a tu Cuenta
+            </a>
+        </div>
+
+        <hr style='margin-top: 30px;'>
+
+        <p style='font-size: 12px; color:#777; text-align:center;'>
+            Gracias por formar parte de Delivery Control.<br>
+            ¡Estamos emocionados de tenerte en el equipo!
+        </p>
+    </div>
+</div>";
+
+                await EnviarCorreoAsync(correo, asunto, mensaje);
+            }
+
 
 
         }

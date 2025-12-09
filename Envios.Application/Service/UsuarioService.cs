@@ -2,6 +2,7 @@
 using Envios.Application.Service.Envios.Application.Services;
 using Envios.Domain.DTOs.UsuarioDTO;
 using Envios.Domain.Entities;
+using Envios.Domain.Enum;
 using Envios.Domain.Interfaces;
 using System.Collections.Concurrent;
 using System.Security.Cryptography;
@@ -35,9 +36,26 @@ namespace Envios.Application.Services
                 FechaRegistro = DateTime.Now
             };
 
-            await _usuarioRepo.AgregarAsync(usuario);
-            await _emailService.EnviarBienvenidaAsync(usuario.Correo, usuario.Nombre);
+        
 
+            await _usuarioRepo.AgregarAsync(usuario);
+
+            if (usuario.Rol == RolUsuario.Delivery)
+            {
+                
+                await _emailService.EnviarBienvenidaDeliveryAsync(
+                    usuario.Correo,
+                    usuario.Nombre,
+                    usuario.IdUsuario
+                );
+            }
+            else
+            {
+     
+               await _emailService.EnviarBienvenidaAsync(usuario.Correo, usuario.Nombre);
+            }
+
+       
             return new GetUsuarioDto
             {
                 IdUsuario = usuario.IdUsuario,
