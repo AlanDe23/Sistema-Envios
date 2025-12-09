@@ -69,15 +69,7 @@ namespace Envios.Infrastructure.Repositories.ReposGenery
         {
             try
             {
-                _context.Set<T>().Attach(entidad);
-                _context.Entry(entidad).State = EntityState.Modified;
-
-                // ❗ Evitar que EF intente actualizar propiedades de navegación
-                foreach (var navigation in _context.Entry(entidad).Navigations)
-                {
-                    navigation.IsModified = false;
-                }
-
+                _context.Set<T>().Update(entidad);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
