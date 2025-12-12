@@ -141,7 +141,6 @@ public class BalanceService : IBalanceService
         return balance;
     }
 
-
     public async Task ActualizarBalanceDeliveryAsync(int idDelivery)
     {
         var pedidos = await _repositorioPedido.GetAllAsync();
@@ -152,16 +151,15 @@ public class BalanceService : IBalanceService
         if (!pedidosEntregados.Any())
             return;
 
-        // 🔍 Buscar balances existentes del delivery
-        var balances = await _repositorioBalance.GetAllAsync();
-        var balanceExistente = balances.FirstOrDefault(b => b.IdDelivery == idDelivery);
-        var balancePagado = balances.FirstOrDefault(b => b.IdDelivery == idDelivery && b.Pagado);
+        // 1) Obtener sólo EL balance para este delivery (tracked)
+        var balanceExistente = await _repositorioBalance.GetByDeliveryAsync(idDelivery);
 
-        // 🚫 Si ya hubo un balance pagado, NO volver a crear ni actualizar
-        if (balancePagado != null)
+        // 2) Comprobación de si existe balance pagado (también la hacemos por repo)
+        var balancePagado = balanceExistente != null && balanceExistente.Pagado;
+        if (balancePagado)
             return;
 
-        // 💰 Calcular totales por método de pago
+        // 3) Calculos
         decimal totalEfectivo = pedidosEntregados
             .Where(p => p.MetodoPago == MetodoPago.Efectivo.ToString())
             .Sum(p => p.PrecioPedido);
@@ -174,14 +172,11 @@ public class BalanceService : IBalanceService
             .Where(p => p.MetodoPago == MetodoPago.Transferencia.ToString())
             .Sum(p => p.PrecioEnvio);
 
-        // 💵 Efectivo neto (restando los envíos por transferencia)
         decimal totalEfectivoNeto = totalEfectivo - totalEnviosTransferencias;
-
-        // 🧾 TotalFinalAdmin = suma de todos los pedidos (efectivo + transferencias)
         decimal totalFinalAdmin = pedidosEntregados.Sum(p => p.PrecioPedido);
 
-        // ⚙️ Si ya existe un balance pendiente → actualizamos
-        if (balanceExistente != null && !balanceExistente.Pagado)
+        // 4) Si existe y NO está pagado -> modificar la instancia trackeada y guardar
+        if (balanceExistente != null)
         {
             balanceExistente.TotalTransferencias = totalTransferencias;
             balanceExistente.TotalEfectivoBruto = totalEfectivo;
@@ -193,29 +188,32 @@ public class BalanceService : IBalanceService
             balanceExistente.TotalMontoPedidos = totalFinalAdmin;
             balanceExistente.TotalEntregados = pedidosEntregados.Count;
 
-            await _repositorioBalance.ActualizarAsync(balanceExistente);
+            // Guardar cambios sobre la instancia TRACKED
+            await _repositorioBalance.GuardarCambiosAsync();
+            Console.WriteLine($"Balance actualizado para delivery {idDelivery}");
+            return;
         }
-        // 🆕 Si no existe ningún balance → lo creamos
-        else if (balanceExistente == null)
-        {
-            var nuevoBalance = new BalanceAdmin
-            {
-                IdDelivery = idDelivery,
-                TotalTransferencias = totalTransferencias,
-                TotalEfectivoBruto = totalEfectivo,
-                TotalEnviosTransferencias = totalEnviosTransferencias,
-                TotalEfectivoNeto = totalEfectivoNeto,
-                TotalFinalAdmin = totalFinalAdmin,
-                TotalPedidosEntregados = pedidosEntregados.Count,
-                FechaActualizacion = DateTime.UtcNow,
-                Pagado = false,
-                TotalMontoPedidos = totalFinalAdmin,
-                TotalEntregados = pedidosEntregados.Count
-            };
 
-            await _repositorioBalance.AgregarAsync(nuevoBalance);
-        }
+        // 5) Si no existe balance -> crear
+        var nuevoBalance = new BalanceAdmin
+        {
+            IdDelivery = idDelivery,
+            TotalTransferencias = totalTransferencias,
+            TotalEfectivoBruto = totalEfectivo,
+            TotalEnviosTransferencias = totalEnviosTransferencias,
+            TotalEfectivoNeto = totalEfectivoNeto,
+            TotalFinalAdmin = totalFinalAdmin,
+            TotalPedidosEntregados = pedidosEntregados.Count,
+            FechaActualizacion = DateTime.UtcNow,
+            Pagado = false,
+            TotalMontoPedidos = totalFinalAdmin,
+            TotalEntregados = pedidosEntregados.Count
+        };
+
+        await _repositorioBalance.AgregarAsync(nuevoBalance);
+        Console.WriteLine($"Nuevo balance creado para delivery {idDelivery}");
     }
+
 
 
 

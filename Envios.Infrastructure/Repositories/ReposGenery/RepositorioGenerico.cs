@@ -20,13 +20,33 @@ namespace Envios.Infrastructure.Repositories.ReposGenery
         {
             try
             {
-                return await _dbSet.FindAsync(id);
+                if (id <= 0)
+                    throw new ArgumentException("El ID proporcionado no es válido.");
+
+                var keyName = _context.Model.FindEntityType(typeof(T))
+                    ?.FindPrimaryKey()
+                    ?.Properties.First().Name;
+
+                if (keyName == null)
+                    throw new Exception($"No se encontró la llave primaria de {typeof(T).Name}");
+
+                var entity = await _context.Set<T>()
+                    .FirstOrDefaultAsync(e => EF.Property<int>(e, keyName) == id);
+
+                if (entity == null)
+                    throw new KeyNotFoundException($"No existe un {typeof(T).Name} con ID {id}");
+
+                return entity;
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al obtener {typeof(T).Name} por Id: {id}", ex);
+                throw new Exception($"Error en GetByIdAsync para {typeof(T).Name}", ex);
             }
         }
+
+
+
+
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
@@ -69,7 +89,7 @@ namespace Envios.Infrastructure.Repositories.ReposGenery
         {
             try
             {
-                _context.Set<T>().Update(entidad);
+                _context.Entry(entidad).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -77,6 +97,7 @@ namespace Envios.Infrastructure.Repositories.ReposGenery
                 throw new Exception($"Error al actualizar {typeof(T).Name}", ex);
             }
         }
+
 
 
 

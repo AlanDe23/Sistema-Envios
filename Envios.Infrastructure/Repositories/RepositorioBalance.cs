@@ -47,9 +47,10 @@ namespace Envios.Infrastructure.Repositories
         }
 
 
-        public async Task<BalanceAdmin> GetByDeliveryAsync(int idDelivery)
+        public async Task<BalanceAdmin?> GetByDeliveryAsync(int idDelivery)
         {
             return await _context.BalanceAdmin
+                .AsTracking()              // <<-- FORZAR TRACKING
                 .Where(b => b.IdDelivery == idDelivery && !b.IsDeleted)
                 .FirstOrDefaultAsync();
         }
@@ -69,7 +70,21 @@ namespace Envios.Infrastructure.Repositories
         }
 
 
+        public async Task<BalanceAdmin?> GetByIdAsync(int idBalance)
+        {
+            return await _context.BalanceAdmin
+                .AsTracking()
+                .FirstOrDefaultAsync(b => b.IdBalance == idBalance && !b.IsDeleted);
+        }
 
 
+
+        public async Task<int> GuardarCambiosAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
+
+       
     }
 }

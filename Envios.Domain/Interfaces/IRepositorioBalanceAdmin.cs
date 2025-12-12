@@ -15,7 +15,7 @@ namespace Envios.Domain.Interfaces
         Task<BalanceAdmin?> GetByDeliveryAsync(int idDelivery);
         Task AgregarAsync(BalanceAdmin balance);
 
-
+        Task<int> GuardarCambiosAsync();
         Task SoftDeleteAsync(int id);
 
     }

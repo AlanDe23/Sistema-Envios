@@ -6,15 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Envios.Domain.Entities
-{
-    public class BalanceAdmin
-    {
+namespace Envios.Domain.Entities { 
+        public class BalanceAdmin
+        {
             [Key]
             public int IdBalance { get; set; }
 
-            [ForeignKey("IdDelivery")] 
+            [ForeignKey("Delivery")]
             public int IdDelivery { get; set; }
+
             public decimal TotalTransferencias { get; set; }
             public decimal TotalEfectivoBruto { get; set; }
             public decimal TotalEnviosTransferencias { get; set; }
@@ -22,13 +22,14 @@ namespace Envios.Domain.Entities
             public decimal TotalFinalAdmin { get; set; }
             public int TotalPedidosEntregados { get; set; }
             public DateTime FechaActualizacion { get; set; }
-            public bool Pagado { get; set; } // si se marcó como pagado
-            public decimal TotalMontoPedidos { get; set; }   //  Agregar esto
+            public bool Pagado { get; set; }
+            public decimal TotalMontoPedidos { get; set; }
             public int TotalEntregados { get; set; }
-            public Delivery Delivery { get; set; } = null!;
 
+            // 🔥 IMPORTANTE: quitar del SetValues
+            public Delivery Delivery { get; set; }
 
-           public bool IsDeleted { get; set; } = false;
+            public bool IsDeleted { get; set; } = false;
+        }
 
     }
-}
