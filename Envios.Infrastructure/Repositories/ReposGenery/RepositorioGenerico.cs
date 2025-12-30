@@ -99,7 +99,10 @@ namespace Envios.Infrastructure.Repositories.ReposGenery
         }
 
 
-
+        public async Task GuardarCambiosAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
 
         public async Task EliminarAsync(T entidad)
         {

@@ -34,7 +34,9 @@ namespace Envios.Application.Service
                 NombreSucursal = dto.NombreSucursal,
                 Direccion = dto.Direccion,
                 Telefono = dto.Telefono,
-                Activa = true
+                Activa = true,
+                UsuarioId = dto.UsuarioId,
+                FechaRegistro = DateTime.Now
             };
 
             await _repoSucursal.AgregarAsync(sucursal);

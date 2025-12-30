@@ -10,10 +10,10 @@ namespace Envios.Domain.Interfaces
 
     public interface IRepositorioSuscripcion
     {
-        Task<Suscripcion?> ObtenerPorIdAsync(int id);
-        Task<IEnumerable<Suscripcion>> ObtenerPorUsuarioAsync(int  usuarioId);
-        Task CrearAsync(Suscripcion suscripcion);
-        Task ActualizarAsync(Suscripcion suscripcion);
+        Task<Suscripcion?> GetByCarnetIdAsync(string carnetId);
+        Task<Suscripcion?> GetActivaByUsuarioAsync(int usuarioId);
+        Task AddAsync(Suscripcion suscripcion);
+        Task SaveChangesAsync();
     }
 
 }

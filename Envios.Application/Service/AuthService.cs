@@ -65,8 +65,8 @@ public class AuthService
             response.Sucursales.Add(new SucursalLoginDto
             {
                 IdSucursal = delivery.IdSucursal,
-                NombreSucursal = sucursal?.NombreSucursal ?? string.Empty,
-                Activa = sucursal?.Activa ?? false
+                NombreSucural = sucursal?.NombreSucursal ?? string.Empty
+
             });
 
             return response; // ⬅️ FIN AQUÍ
@@ -80,8 +80,8 @@ public class AuthService
             .Select(s => new SucursalLoginDto
             {
                 IdSucursal = s.IdSucursal,
-                NombreSucursal = s.NombreSucursal,
-                Activa = s.Activa
+                NombreSucural = s.NombreSucursal
+            
             })
             .ToList();
 

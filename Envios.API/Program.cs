@@ -6,7 +6,6 @@ using Envios.Domain.Interfaces;
 using Envios.Infrastructure.Persistence.Data;
 using Envios.Infrastructure.Repositories;
 using Envios.Infrastructure.Repositories.ReposGenery;
-using Envios.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -98,7 +97,6 @@ namespace Envios.API
             builder.Services.AddScoped<IDeliveryService, DeliveryService>();
             builder.Services.AddScoped<IPedidoService, PedidoService>();
             builder.Services.AddScoped<IBalanceService, BalanceService>();
-            builder.Services.AddScoped<IPagoService, PagoSimuladoService>();
             builder.Services.AddScoped<ISucursalService, SucursalService>();
             builder.Services.AddScoped<SuscripcionService>();
             builder.Services.AddScoped<EmailService>();

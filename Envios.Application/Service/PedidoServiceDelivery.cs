@@ -41,7 +41,10 @@ namespace Envios.Application.Services
             pedido.FechaEntrega = dto.FechaEntrega;
             pedido.MetodoPago = dto.MetodoPago.ToString();
 
+
+
             await _pedidoRepo.ActualizarAsync(pedido);
+
 
             //  Sincroniza el balance automaticamente
             await _balanceService.ActualizarBalanceDeliveryAsync(pedido.IdDelivery.Value , idSucursal);
@@ -160,6 +163,11 @@ namespace Envios.Application.Services
         public async Task<object> ObtenerPedidosPorDeliveryAsync(int idDelivery , int idSucursal)
         {
             var pedidos = await _pedidoRepo.GetAllBySucursalAsync(idSucursal);
+
+
+            var pedidosDelivery = pedidos
+       .Where(p => p.IdDelivery == idDelivery)
+       .ToList();
 
             if (!pedidos.Any())
                 return new { mensaje = "Este delivery no tiene pedidos asignados" };

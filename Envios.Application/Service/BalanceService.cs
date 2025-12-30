@@ -145,10 +145,18 @@ public class BalanceService : IBalanceService
 
     public async Task ActualizarBalanceDeliveryAsync(int idDelivery , int idSucursal)
     {
-        var pedidos = await _repositorioPedido.GetAllBySucursalAsync(idSucursal);   
+        var pedidos = await _repositorioPedido.GetEntregadosByDeliveryAsync(idDelivery, idSucursal);
         var pedidosEntregados = pedidos
             .Where(p => p.IdDelivery == idDelivery && p.Estado == EstadoPedido.Entregado.ToString())
             .ToList();
+
+
+        foreach (var p in pedidosEntregados)
+        {
+            Console.WriteLine(
+                $"Pedido {p.IdPedido} | Estado={p.Estado} | MetodoPago='{p.MetodoPago}' | PrecioPedido={p.PrecioPedido} | PrecioEnvio={p.PrecioEnvio}"
+            );
+        }
 
         if (!pedidosEntregados.Any())
             return;
@@ -186,7 +194,7 @@ public class BalanceService : IBalanceService
             balanceExistente.TotalEfectivoNeto = totalEfectivoNeto;
             balanceExistente.TotalFinalAdmin = totalFinalAdmin;
             balanceExistente.TotalPedidosEntregados = pedidosEntregados.Count;
-            balanceExistente.FechaActualizacion = DateTime.UtcNow;
+            balanceExistente.FechaActualizacion = DateTime.Now;
             balanceExistente.TotalMontoPedidos = totalFinalAdmin;
             balanceExistente.TotalEntregados = pedidosEntregados.Count;
 

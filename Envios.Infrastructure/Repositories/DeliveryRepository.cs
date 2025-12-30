@@ -90,6 +90,7 @@ namespace Envios.Infrastructure.Repositories
         public async Task<Delivery?> GetByUsuarioIdAsync(int idUsuario)
         {
             return await _context.Delivery
+                .Include(d => d.Sucursal)
                 .FirstOrDefaultAsync(d => d.IdUsuario == idUsuario);
         }
 

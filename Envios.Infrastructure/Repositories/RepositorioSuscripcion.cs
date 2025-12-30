@@ -14,26 +14,31 @@ namespace Envios.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task CrearAsync(Suscripcion suscripcion)
+        public async Task<Suscripcion?> GetByCarnetIdAsync(string carnetSubscriptionId)
+        {
+            return await _context.Suscripciones
+                .FirstOrDefaultAsync(x => x.TransaccionId == carnetSubscriptionId);
+        }
+
+        public async Task<Suscripcion?> GetActivaByUsuarioAsync(int usuarioId)
+        {
+            return await _context.Suscripciones
+                .Where(x => x.UsuarioId == usuarioId &&
+                            x.Estado == "Activa" &&
+                            x.FechaFin > DateTime.Now)
+                .OrderByDescending(x => x.FechaFin)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task AddAsync(Suscripcion suscripcion)
         {
             await _context.Suscripciones.AddAsync(suscripcion);
-            await _context.SaveChangesAsync();
         }
 
-        public async Task<Suscripcion?> ObtenerPorIdAsync(int id)
+        public async Task SaveChangesAsync()
         {
-            return await _context.Suscripciones.FindAsync(id);
-        }
-
-        public async Task<IEnumerable<Suscripcion>> ObtenerPorUsuarioAsync(int  usuarioId)
-        {
-            return await _context.Suscripciones.Where(s => s.UsuarioId == usuarioId).ToListAsync();
-        }
-
-        public async Task ActualizarAsync(Suscripcion suscripcion)
-        {
-            _context.Suscripciones.Update(suscripcion);
             await _context.SaveChangesAsync();
         }
     }
 }
+

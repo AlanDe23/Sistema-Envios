@@ -81,7 +81,9 @@ namespace Envios.Infrastructure.Persistence.Data
                 .WithMany(s => s.UsuarioSucursales)
                 .HasForeignKey(us => us.IdSucursal);
 
-
+            modelBuilder.Entity<Suscripcion>()
+        .Property(x => x.CarnetSubscriptionId)
+        .HasColumnName("CarnetSubscriptionId");
 
 
         }

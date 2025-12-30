@@ -24,7 +24,7 @@ namespace Envios.Domain.Entities
         public Usuario Usuario { get; set; }
 
         public bool Activa { get; set; }
-        public DateTime FechaRegistro { get; set; }
+        public DateTime FechaRegistro { get; set; } = DateTime.Now; 
 
 
         public ICollection<UsuarioSucursales> UsuarioSucursales { get; set; }

@@ -21,6 +21,9 @@ namespace Envios.Domain.Interfaces
 
         Task<IEnumerable<Pedido>> GetPedidosPorDeliveryAsync(int idDelivery );
 
+
+        Task<List<Pedido>> GetEntregadosByDeliveryAsync(int idDelivery, int idSucursal);
+
     }
 }
  

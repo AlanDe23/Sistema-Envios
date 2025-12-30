@@ -1,6 +1,9 @@
-﻿using Envios.Infrastructure.Persistence.Data;
+﻿using Envios.Domain.Entities;
+using Envios.Domain.Interfaces;
+using Envios.Infrastructure.Persistence.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 public class SucursalMiddleware
 {
@@ -13,6 +16,9 @@ public class SucursalMiddleware
 
     public async Task InvokeAsync(HttpContext context, AppDbContext db)
     {
+        var suscripcionRepo = context.RequestServices
+            .GetRequiredService<IRepositorioSuscripcion>();
+
         var path = context.Request.Path.Value?.ToLower();
 
         // 🔹 ENDPOINTS PÚBLICOS (NO VALIDAR SUCURSAL)
@@ -42,6 +48,7 @@ public class SucursalMiddleware
 
        // 📦 SUSCRIPCIONES
        path.StartsWith("/api/suscripciones") ||
+       path.StartsWith("/api/webhooks")||
 
        // ✅ VALIDAR TOKEN
        path.StartsWith("/api/validar/validar-token") ||
@@ -63,6 +70,7 @@ public class SucursalMiddleware
             return;
         }
 
+
         // 🔹 HEADER SUCURSAL
         if (!context.Request.Headers.TryGetValue("X-Sucursal-Id", out var sucursalHeader))
         {
@@ -80,17 +88,36 @@ public class SucursalMiddleware
         }
 
         // 🔹 VALIDAR ACCESO USUARIO ↔ SUCURSAL
-        bool tieneAcceso = await db.UsuarioSucursales.AnyAsync(us =>
+        // 🔹 VALIDAR ACCESO POR USUARIO-SUCURSAL (ADMIN / USUARIO)
+        bool accesoUsuario = await db.UsuarioSucursales.AnyAsync(us =>
             us.IdUsuario == idUsuario &&
             us.IdSucursal == idSucursal
         );
 
-        if (!tieneAcceso)
+        // 🔹 VALIDAR ACCESO POR DELIVERY
+        bool accesoDelivery = await db.Delivery.AnyAsync(d =>
+            d.IdUsuario == idUsuario &&
+            d.IdSucursal == idSucursal &&   
+            d.Activo
+        );
+
+        var suscripcion = await suscripcionRepo.GetActivaByUsuarioAsync(idUsuario);
+
+        if (suscripcion == null)
+        {
+            context.Response.StatusCode = 403;
+            return;
+        }
+
+        // 🔹 SI NO TIENE ACCESO POR NINGUNO
+        if (!accesoUsuario && !accesoDelivery)
         {
             context.Response.StatusCode = 403;
             await context.Response.WriteAsync("No tiene acceso a esta sucursal");
             return;
         }
+
+
 
         // 🔹 GUARDAR EN CONTEXTO
         context.Items["IdUsuario"] = idUsuario;

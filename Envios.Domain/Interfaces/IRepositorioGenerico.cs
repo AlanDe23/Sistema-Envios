@@ -15,5 +15,6 @@ namespace Envios.Domain.Interfaces
         Task AgregarAsync(T entidad);
         Task ActualizarAsync(T entidad);
         Task EliminarAsync(T entidad);
+        Task GuardarCambiosAsync();
     }
 }

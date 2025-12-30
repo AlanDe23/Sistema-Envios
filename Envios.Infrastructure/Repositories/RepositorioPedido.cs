@@ -1,4 +1,5 @@
 ﻿using Envios.Domain.Entities;
+using Envios.Domain.Enum;
 using Envios.Domain.Interfaces;
 using Envios.Infrastructure.Persistence.Data;
 using Envios.Infrastructure.Repositories.ReposGenery;
@@ -121,6 +122,18 @@ namespace Envios.Infrastructure.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<List<Pedido>> GetEntregadosByDeliveryAsync(int idDelivery, int idSucursal)
+        {
+            return await _context.Pedido
+                .Where(p =>
+                    p.IdSucursal == idSucursal &&
+                    p.IdDelivery == idDelivery &&
+                    p.Estado == EstadoPedido.Entregado.ToString() &&
+                    !p.IsDeleted
+                )
+
+                .ToListAsync();
+        }
 
     }
 }
