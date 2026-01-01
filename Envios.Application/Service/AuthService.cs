@@ -80,7 +80,7 @@ public class AuthService
             .Select(s => new SucursalLoginDto
             {
                 IdSucursal = s.IdSucursal,
-                NombreSucural = s.NombreSucursal
+                NombreSucursal = s.NombreSucursal
             
             })
             .ToList();
