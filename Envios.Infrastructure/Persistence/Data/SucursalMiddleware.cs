@@ -101,13 +101,13 @@ public class SucursalMiddleware
             d.Activo
         );
 
-        var suscripcion = await suscripcionRepo.GetActivaByUsuarioAsync(idUsuario);
+        //var suscripcion = await suscripcionRepo.GetActivaByUsuarioAsync(idUsuario);
 
-        if (suscripcion == null)
-        {
-            context.Response.StatusCode = 403;
-            return;
-        }
+        //if (suscripcion == null)
+        //{
+        //    context.Response.StatusCode = 403;
+        //    return;
+        //}
 
         // 🔹 SI NO TIENE ACCESO POR NINGUNO
         if (!accesoUsuario && !accesoDelivery)

@@ -37,6 +37,7 @@ public class AuthController : ControllerBase
                 nombre = resultado.Nombre,
                 correo = resultado.Correo,
                 rol = resultado.Rol,
+                idDelivery = resultado.IdDelivery,
                 sucursales = resultado.Sucursales // ⬅️ NUEVO
             });
         }

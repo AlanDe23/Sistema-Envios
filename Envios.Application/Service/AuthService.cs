@@ -61,13 +61,14 @@ public class AuthService
                 sucursal = (await _sucursalRepo.ObtenerPorUsuarioAsync(usuario.IdUsuario))
                     .FirstOrDefault(s => s.IdSucursal == delivery.IdSucursal);
             }
-
+            response.IdDelivery = delivery.IdDelivery;
             response.Sucursales.Add(new SucursalLoginDto
             {
                 IdSucursal = delivery.IdSucursal,
                 NombreSucursal = sucursal?.NombreSucursal ?? string.Empty
 
             });
+
 
             return response; // ⬅️ FIN AQUÍ
         }
@@ -81,12 +82,10 @@ public class AuthService
             {
                 IdSucursal = s.IdSucursal,
                 NombreSucursal = s.NombreSucursal
-            
+
             })
             .ToList();
 
         return response;
     }
 }
-
-
