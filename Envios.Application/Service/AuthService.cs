@@ -65,7 +65,7 @@ public class AuthService
             response.Sucursales.Add(new SucursalLoginDto
             {
                 IdSucursal = delivery.IdSucursal,
-                NombreSucural = sucursal?.NombreSucursal ?? string.Empty
+                NombreSucursal = sucursal?.NombreSucursal ?? string.Empty
 
             });
 

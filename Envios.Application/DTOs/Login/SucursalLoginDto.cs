@@ -6,7 +6,7 @@ namespace Envios.Application.DTOs.Login
     {
         public int IdSucursal { get; set; }
        
-        public string NombreSucural { get; set; }
+        public string NombreSucursal { get; set; }
 
 
     }
