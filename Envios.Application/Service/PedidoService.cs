@@ -2,6 +2,7 @@
 using Envios.Application.Service.Interface;
 using Envios.Domain.DTOs.PedidoDTO;
 using Envios.Domain.Entities;
+using Envios.Domain.Enum;
 using Envios.Domain.Interfaces;
 using System.Net.Http;
 
@@ -58,6 +59,9 @@ namespace Envios.Application.Services
 
             if (pedido == null)
                 throw new Exception($"No se encontró el pedido con Id {dto.IdPedido}");
+
+            if(pedido.Estado == EstadoPedido.Entregado.ToString())
+                throw new Exception("El pedido ya fue entregado y no puede ser editado.");
 
             pedido.Descripcion = dto.Descripcion;
             pedido.Estado = dto.Estado.ToString();
